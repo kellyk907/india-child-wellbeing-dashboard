@@ -17,7 +17,11 @@ Urban vs. rural breakdown — shows the gap between urban and rural child nutrit
 
 
 Key Findings
-IndicatorNFHS-4 (2016)NFHS-5 (2021)TrendStunting (height-for-age)38.4%35.5%↓ ImprovingWasting (weight-for-height)21.0%19.3%↓ ImprovingUnderweight (weight-for-age)35.8%32.1%↓ ImprovingAnemia (under 5)58.6%67.1%↑ Worsening
+IndicatorNFHS-4 (2016)NFHS-5 (2021): 
+Stunting (height-for-age)38.4% 35.5%↓ 
+Wasting (weight-for-height)21.0%  19.3%↓ 
+Underweight (weight-for-age)35.8%  32.1%↓ 
+Anemia (under 5)58.6%  67.1%↑ 
 Critical finding: While stunting, wasting, and underweight have improved nationally, anemia among children under 5 has worsened — rising from 58.6% to 67.1%. This represents the most urgent program gap in child nutrition in India today.
 Equity finding: National averages mask significant state-level disparities. Stunting ranges from ~20% in Puducherry to 46.5% in Meghalaya — meaning programs designed around national data miss where children need help most.
 
