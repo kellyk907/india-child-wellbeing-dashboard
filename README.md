@@ -1,6 +1,6 @@
 Child Wellbeing in India — Program Evaluation Dashboard
 An independent data analysis and interactive dashboard examining child nutrition and health outcomes across India's states, using data from the National Family Health Survey (NFHS-5, 2019–21) — one of the most comprehensive population health surveys in the world.
-🔗 View the live dashboard
+🔗 View the live dashboard: https://india-child-wellbeing.netlify.app
 
 About This Project
 This project applies a program evaluation framework to publicly available NFHS data to assess where child wellbeing programs in India are working, where critical gaps remain, and what the priorities should be for targeted intervention.
