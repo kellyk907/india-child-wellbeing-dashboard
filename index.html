@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Child Wellbeing in India — Program Evaluation Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #0f2a4a;
+  --blue: #1a4b7a;
+  --mid-blue: #2d6fa5;
+  --light-blue: #5b9fd4;
+  --pale-blue: #ddeef9;
+  --teal: #1d9e75;
+  --pale-teal: #e1f5ee;
+  --amber: #c8860a;
+  --pale-amber: #fef3dc;
+  --red: #c0392b;
+  --pale-red: #fdecea;
+  --text: #0f2a4a;
+  --text-muted: #5a7a9a;
+  --border: #d0e3f0;
+  --bg: #f4f8fb;
+  --white: #ffffff;
+  --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --serif: 'DM Serif Display', Georgia, serif;
+}
+
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+.hero {
+  background: var(--navy); color: white; padding: 52px 40px 44px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px; border-radius: 50%;
+  border: 40px solid rgba(255,255,255,0.04);
+}
+.hero-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--light-blue); font-weight: 500; margin-bottom: 14px; }
+.hero h1 { font-family: var(--serif); font-size: clamp(26px, 4vw, 40px); font-weight: 400; line-height: 1.2; margin-bottom: 14px; }
+.hero p { font-size: 14px; color: rgba(255,255,255,0.7); max-width: 580px; line-height: 1.7; margin-bottom: 22px; }
+.hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.75); }
+
+.main { padding: 36px 24px; max-width: 920px; margin: 0 auto; }
+
+.section-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+.controls {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 22px; margin-bottom: 28px;
+  display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;
+  box-shadow: 0 1px 4px rgba(15,42,74,0.07);
+}
+.control-group { display: flex; flex-direction: column; gap: 5px; }
+.control-group label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+select {
+  font-family: var(--sans); font-size: 14px; padding: 8px 36px 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg);
+  color: var(--text); cursor: pointer; min-width: 200px; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235a7a9a' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+select:focus { outline: 2px solid var(--mid-blue); outline-offset: 1px; border-color: var(--mid-blue); }
+
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.metric-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 16px; box-shadow: 0 1px 4px rgba(15,42,74,0.07);
+  transition: transform 0.15s ease;
+}
+.metric-card:hover { transform: translateY(-2px); }
+.metric-card.alert { border-left: 3px solid var(--red); }
+.metric-card.good { border-left: 3px solid var(--teal); }
+.metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 600; margin-bottom: 7px; }
+.metric-value { font-family: var(--serif); font-size: 34px; color: var(--navy); line-height: 1; margin-bottom: 5px; }
+.metric-delta { font-size: 12px; font-weight: 500; }
+.delta-good { color: var(--teal); }
+.delta-bad { color: var(--red); }
+.metric-survey { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+.chart-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; box-shadow: 0 1px 4px rgba(15,42,74,0.07);
+}
+.chart-card.full { grid-column: 1 / -1; }
+.chart-title { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
+.chart-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+canvas { display: block; }
+
+.insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+.insight-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(15,42,74,0.07); }
+.insight-type { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+.type-progress { background: var(--pale-teal); color: #0a6b4d; }
+.type-gap { background: var(--pale-red); color: #8b2020; }
+.type-equity { background: var(--pale-amber); color: #7a5200; }
+.type-lever { background: var(--pale-blue); color: var(--blue); }
+.insight-title { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.insight-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+.rec-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 28px; box-shadow: 0 1px 4px rgba(15,42,74,0.07); }
+.rec-dynamic { font-size: 13px; color: var(--navy); line-height: 1.7; padding: 14px 16px; background: var(--pale-blue); border-radius: 8px; border-left: 3px solid var(--mid-blue); margin-bottom: 18px; }
+.rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.rec-group-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px; }
+.rec-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.rec-bullet { width: 6px; height: 6px; border-radius: 50%; background: var(--mid-blue); flex-shrink: 0; margin-top: 7px; }
+.rec-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+
+.sources { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; box-shadow: 0 1px 4px rgba(15,42,74,0.07); margin-bottom: 36px; }
+.sources-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
+.source-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+.source-num { color: var(--text-muted); min-width: 18px; font-weight: 600; }
+.source-item a { color: var(--mid-blue); text-decoration: none; line-height: 1.5; }
+.source-item a:hover { text-decoration: underline; }
+
+.footer { text-align: center; padding: 22px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+@media (max-width: 620px) {
+  .charts-grid, .insights-grid, .rec-grid { grid-template-columns: 1fr; }
+  .chart-card.full { grid-column: 1; }
+  .hero { padding: 36px 20px; }
+  .controls { flex-direction: column; }
+  select { min-width: unset; width: 100%; }
+  .main { padding: 24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Independent Program Evaluation Analysis</p>
+    <h1>Child Wellbeing in India</h1>
+    <p>A data-driven evaluation of key child nutrition and health indicators across India's states, using the National Family Health Survey (NFHS). Applying a program evaluation framework to identify progress, persistent gaps, and priorities for targeted intervention.</p>
+    <div class="hero-tags">
+      <span class="tag">NFHS-5 · 2019–21</span>
+      <span class="tag">636,000 households surveyed</span>
+      <span class="tag">36 states & UTs</span>
+      <span class="tag">Children under 5 years</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="controls">
+    <div class="control-group">
+      <label>State / Region</label>
+      <select id="stateSelect" onchange="updateDashboard()">
+        <option value="national">All India (National)</option>
+        <option value="kerala">Kerala</option>
+        <option value="punjab">Punjab</option>
+        <option value="goa">Goa</option>
+        <option value="maharashtra">Maharashtra</option>
+        <option value="karnataka">Karnataka</option>
+        <option value="madhya_pradesh">Madhya Pradesh</option>
+        <option value="rajasthan">Rajasthan</option>
+        <option value="uttar_pradesh">Uttar Pradesh</option>
+        <option value="jharkhand">Jharkhand</option>
+        <option value="bihar">Bihar</option>
+        <option value="meghalaya">Meghalaya</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Indicator Focus</label>
+      <select id="indicatorSelect" onchange="updateDashboard()">
+        <option value="all">All Indicators</option>
+        <option value="stunting">Stunting</option>
+        <option value="wasting">Wasting</option>
+        <option value="underweight">Underweight</option>
+        <option value="anemia">Anemia</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Survey Year</label>
+      <select id="yearSelect" onchange="updateDashboard()">
+        <option value="nfhs5">NFHS-5 (2019–21)</option>
+        <option value="nfhs4">NFHS-4 (2015–16)</option>
+        <option value="nfhs3">NFHS-3 (2005–06)</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="section-label">Key indicators — <span id="metrics-label">All India · NFHS-5 (2019–21)</span></p>
+  <div class="metrics-grid" id="metricsGrid"></div>
+
+  <p class="section-label">Trend & distribution analysis</p>
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <p class="chart-title" id="trendTitle">National nutrition trends across NFHS rounds</p>
+      <p class="chart-subtitle">Percentage of children under 5 affected by each indicator</p>
+      <div class="legend" id="trendLegend"></div>
+      <div style="position:relative;width:100%;height:260px;">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <p class="chart-title">State comparison — stunting rates (NFHS-5)</p>
+      <p class="chart-subtitle">Selected states, % children under 5 stunted</p>
+      <div style="position:relative;width:100%;height:340px;">
+        <canvas id="stateChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <p class="chart-title">Urban vs rural gap</p>
+      <p class="chart-subtitle">Key indicators by residence type, NFHS-5 national</p>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#1a4b7a"></div>Urban</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5b9fd4"></div>Rural</div>
+      </div>
+      <div style="position:relative;width:100%;height:280px;">
+        <canvas id="urbanChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <p class="section-label">Program evaluation findings</p>
+  <div class="insights-grid">
+    <div class="insight-card">
+      <span class="insight-type type-progress">Progress achieved</span>
+      <p class="insight-title">30-year decline in stunting</p>
+      <p class="insight-text">Stunting fell from 51.9% (1992) to 35.5% (2021) — a significant decline driven by nutrition programs, sanitation access, and institutional delivery expansion. NFHS-5 shows continued improvement in stunting, underweight, and wasting vs. NFHS-4.</p>
+    </div>
+    <div class="insight-card">
+      <span class="insight-type type-gap">Critical gap</span>
+      <p class="insight-title">Anemia is rising, not falling</p>
+      <p class="insight-text">Children under 5 with anemia rose from 58.6% (NFHS-4) to 67.1% (NFHS-5) — the one major indicator moving in the wrong direction. Anemia causes cognitive delays, fatigue, and weakened immunity, undermining gains made in other areas.</p>
+    </div>
+    <div class="insight-card">
+      <span class="insight-type type-equity">Equity concern</span>
+      <p class="insight-title">National averages hide state-level crises</p>
+      <p class="insight-text">Stunting ranges from ~20% in Puducherry to 46.5% in Meghalaya and 42.9% in Bihar. National improvement is driven by a few high-performing states masking regression elsewhere — making disaggregated, state-level data essential for program design.</p>
+    </div>
+    <div class="insight-card">
+      <span class="insight-type type-lever">Program lever</span>
+      <p class="insight-title">Women's empowerment drives outcomes</p>
+      <p class="insight-text">States with higher rates of women owning mobile phones and accessing bank accounts showed stronger child nutrition improvements — supporting whole-household, family-centered program approaches that invest in mothers' agency alongside child nutrition.</p>
+    </div>
+  </div>
+
+  <p class="section-label">Program recommendations</p>
+  <div class="rec-card">
+    <div class="rec-dynamic" id="rec-dynamic">Select a state above to see targeted program recommendations.</div>
+    <div class="rec-grid">
+      <div>
+        <p class="rec-group-title">High-priority interventions</p>
+        <div class="rec-item"><div class="rec-bullet"></div><div class="rec-text">Targeted anemia intervention in Bihar, UP, Rajasthan, and Meghalaya — iron supplementation with community health worker delivery</div></div>
+        <div class="rec-item"><div class="rec-bullet"></div><div class="rec-text">Strengthen frontline worker capacity (ASHAs, AWWs) in high-stunting states through training and supervision support</div></div>
+        <div class="rec-item"><div class="rec-bullet"></div><div class="rec-text">Rural-focused nutrition programs — rural stunting (37.3%) significantly outpaces urban (30.1%)</div></div>
+      </div>
+      <div>
+        <p class="rec-group-title">Program design principles</p>
+        <div class="rec-item"><div class="rec-bullet"></div><div class="rec-text">Integrate women's economic empowerment into child nutrition program design — these outcomes are directly linked</div></div>
+        <div class="rec-item"><div class="rec-bullet"></div><div class="rec-text">Use state-level disaggregated data — not national averages — to allocate resources where gaps are widest</div></div>
+        <div class="rec-item"><div class="rec-bullet"></div><div class="rec-text">Apply intergenerational approach: address maternal nutrition pre- and post-pregnancy alongside child nutrition</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="section-label">Data sources</p>
+  <div class="sources">
+    <div class="source-item"><span class="source-num">1.</span><a href="https://ruralindiaonline.org/en/library/resource/national-family-health-survey-nfhs-5-2019-21-india/" target="_blank">NFHS-5 (2019–21) National Report — IIPS, Ministry of Health & Family Welfare, Government of India</a></div>
+    <div class="source-item"><span class="source-num">2.</span><a href="https://main.mohfw.gov.in/basicpage-14" target="_blank">NFHS-5 Compendium of Factsheets — Ministry of Health and Family Welfare, Government of India</a></div>
+    <div class="source-item"><span class="source-num">3.</span><a href="https://www.data.gov.in/resource/all-india-and-stateut-wise-factsheets-national-family-health-survey-nfhs-5-2019-2021" target="_blank">All India & State/UT-wise Factsheets NFHS-5 — Open Government Data Platform India</a></div>
+    <div class="source-item"><span class="source-num">4.</span><a href="https://microdata.worldbank.org/index.php/catalog/4482" target="_blank">NFHS-5 Microdata Catalog — World Bank / DHS Program</a></div>
+    <div class="source-item"><span class="source-num">5.</span><a href="https://www.sciencedirect.com/science/article/pii/S2213398423002373" target="_blank">Examining prevalence and patterns of malnutrition among children 0–3 in India — ScienceDirect (2023)</a></div>
+    <div class="source-item"><span class="source-num">6.</span><a href="https://www.orfonline.org/research/what-nfhs-5-data-shows" target="_blank">What NFHS-5 Data Shows — ORF Online</a></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Independent analysis by [Your Name] · MPH, Certified in Public Health · Data: NFHS-5 (2019–21), Government of India
+</div>
+
+<script>
+const DATA = {
+  national:       { label:"All India",       nfhs5:{stunting:35.5,wasting:19.3,underweight:32.1,anemia:67.1}, nfhs4:{stunting:38.4,wasting:21.0,underweight:35.8,anemia:58.6}, nfhs3:{stunting:44.9,wasting:19.8,underweight:42.5,anemia:69.5} },
+  kerala:         { label:"Kerala",          nfhs5:{stunting:23.4,wasting:15.7,underweight:19.7,anemia:44.0}, nfhs4:{stunting:19.7,wasting:15.7,underweight:16.1,anemia:38.3}, nfhs3:{stunting:24.5,wasting:15.9,underweight:22.9,anemia:52.0} },
+  punjab:         { label:"Punjab",          nfhs5:{stunting:24.5,wasting:11.4,underweight:24.9,anemia:68.5}, nfhs4:{stunting:25.7,wasting:15.4,underweight:21.9,anemia:53.9}, nfhs3:{stunting:36.4,wasting:15.6,underweight:26.7,anemia:62.0} },
+  goa:            { label:"Goa",             nfhs5:{stunting:25.8,wasting:19.1,underweight:23.8,anemia:52.0}, nfhs4:{stunting:20.1,wasting:21.1,underweight:24.0,anemia:48.0}, nfhs3:{stunting:26.0,wasting:14.0,underweight:27.0,anemia:55.0} },
+  maharashtra:    { label:"Maharashtra",     nfhs5:{stunting:35.2,wasting:25.6,underweight:36.1,anemia:68.9}, nfhs4:{stunting:34.4,wasting:25.7,underweight:36.0,anemia:53.8}, nfhs3:{stunting:46.3,wasting:16.3,underweight:39.7,anemia:72.0} },
+  karnataka:      { label:"Karnataka",       nfhs5:{stunting:30.8,wasting:19.5,underweight:32.9,anemia:65.5}, nfhs4:{stunting:36.2,wasting:26.1,underweight:35.2,anemia:60.9}, nfhs3:{stunting:43.7,wasting:17.6,underweight:37.6,anemia:70.0} },
+  madhya_pradesh: { label:"Madhya Pradesh",  nfhs5:{stunting:35.7,wasting:18.9,underweight:33.0,anemia:72.7}, nfhs4:{stunting:42.0,wasting:25.8,underweight:42.8,anemia:68.9}, nfhs3:{stunting:50.0,wasting:25.0,underweight:60.0,anemia:74.0} },
+  rajasthan:      { label:"Rajasthan",       nfhs5:{stunting:31.8,wasting:17.5,underweight:26.5,anemia:71.5}, nfhs4:{stunting:39.1,wasting:23.0,underweight:36.7,anemia:60.3}, nfhs3:{stunting:43.7,wasting:19.8,underweight:39.9,anemia:71.0} },
+  uttar_pradesh:  { label:"Uttar Pradesh",   nfhs5:{stunting:39.7,wasting:17.3,underweight:32.1,anemia:66.7}, nfhs4:{stunting:46.3,wasting:17.9,underweight:39.5,anemia:63.2}, nfhs3:{stunting:56.8,wasting:14.7,underweight:42.4,anemia:73.9} },
+  jharkhand:      { label:"Jharkhand",       nfhs5:{stunting:39.6,wasting:22.4,underweight:39.4,anemia:69.4}, nfhs4:{stunting:45.3,wasting:29.0,underweight:47.8,anemia:69.9}, nfhs3:{stunting:57.0,wasting:28.0,underweight:56.5,anemia:78.0} },
+  bihar:          { label:"Bihar",           nfhs5:{stunting:42.9,wasting:22.9,underweight:41.0,anemia:69.4}, nfhs4:{stunting:48.3,wasting:20.8,underweight:43.9,anemia:63.5}, nfhs3:{stunting:55.6,wasting:27.5,underweight:55.9,anemia:78.4} },
+  meghalaya:      { label:"Meghalaya",       nfhs5:{stunting:46.5,wasting:15.3,underweight:28.8,anemia:67.2}, nfhs4:{stunting:43.8,wasting:15.8,underweight:28.8,anemia:62.8}, nfhs3:{stunting:54.8,wasting:14.0,underweight:38.0,anemia:68.0} },
+};
+
+const STATE_STUNTING = [
+  {state:'Puducherry',val:20.0},{state:'Sikkim',val:22.3},{state:'Kerala',val:23.4},
+  {state:'Punjab',val:24.5},{state:'Goa',val:25.8},{state:'Karnataka',val:30.8},
+  {state:'Rajasthan',val:31.8},{state:'National avg',val:35.5},{state:'Maharashtra',val:35.2},
+  {state:'M. Pradesh',val:35.7},{state:'UP',val:39.7},{state:'Jharkhand',val:39.6},
+  {state:'Bihar',val:42.9},{state:'Meghalaya',val:46.5}
+];
+
+const RECS = {
+  national:"At the national level, the most urgent priority is reversing rising anemia rates (67.1%), which have increased despite improvements in stunting and underweight. A second priority is addressing regional disparities — national averages mask crisis-level rates in states like Bihar and Meghalaya.",
+  kerala:"Kerala performs among India's best across all indicators. However, stunting has slightly worsened since NFHS-4 (19.7% → 23.4%). Programs should focus on sustaining gains and investigating the drivers of this reversal in an otherwise high-performing state.",
+  punjab:"Punjab has made strong gains in stunting reduction but faces persistently high anemia rates (68.5% — above the national average). Targeted iron supplementation and dietary diversification programs are the top priority.",
+  goa:"Goa performs well across most indicators but wasting (19.1%) remains close to the national average despite higher development indicators. Community nutrition monitoring and early intervention programs are recommended.",
+  maharashtra:"Maharashtra has the highest absolute number of wasted children nationally — wasting at 25.6% is the primary concern, reflecting acute malnutrition requiring therapeutic feeding programs alongside long-term stunting work.",
+  karnataka:"Karnataka has made significant improvements (stunting down from 36.2% to 30.8%) but anemia at 65.5% remains high. Micronutrient supplementation programs combined with dietary diversity initiatives are the top priority.",
+  madhya_pradesh:"Madhya Pradesh has made meaningful progress (stunting down from 42% to 35.7%) but anemia at 72.7% is among the highest in India. Frontline worker capacity and community-based nutrition programs are essential.",
+  rajasthan:"Rajasthan has seen strong improvements across all indicators, but anemia (71.5%) is critically high. The state's large rural population means community health worker reach and supply chain for supplements are key program challenges.",
+  uttar_pradesh:"UP has made meaningful progress (stunting down from 46.3% to 39.7%) but serves the largest absolute number of malnourished children in India due to its population size. Scale, reach, and last-mile delivery are the primary program challenges.",
+  jharkhand:"Jharkhand has seen improvements but remains high across all indicators. The tribal population distribution requires culturally adapted, community-led program delivery. Anganwadi center strengthening and frontline worker training are key.",
+  bihar:"Bihar remains one of India's most urgent cases — stunting at 42.9%, anemia at 69.4%, underweight at 41%. Frontline worker capacity building, community nutrition programs, and maternal health interventions should be the highest priority for any organization working here.",
+  meghalaya:"Meghalaya has India's highest stunting rate (46.5%) — and it has worsened since NFHS-4. This is a state requiring urgent, targeted investment. Community-based nutrition programs adapted to the tribal and rural context are essential."
+};
+
+const PALETTE = {stunting:'#1a4b7a',wasting:'#c8860a',underweight:'#5b9fd4',anemia:'#c0392b'};
+const NAMES = {stunting:'Stunting',wasting:'Wasting',underweight:'Underweight',anemia:'Anemia'};
+
+let charts = {};
+
+function destroyChart(id) { if(charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function drawLineChart(id, labels, datasets) {
+  destroyChart(id);
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, callbacks:{ label: c => c.dataset.label+': '+c.raw+'%' } } },
+      scales:{
+        y:{ min:0, max:85, ticks:{ font:{size:11}, callback:v=>v+'%' }, grid:{ color:'rgba(0,0,0,0.05)' } },
+        x:{ ticks:{ font:{size:11} }, grid:{ display:false } }
+      }
+    }
+  });
+}
+
+function drawBarChart(id, labels, datasets, opts={}) {
+  destroyChart(id);
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets },
+    options:{
+      indexAxis: opts.horizontal ? 'y' : 'x',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: c => (opts.labelPrefix||'')+c.raw+'%' } } },
+      scales:{
+        x:{ min:0, max:opts.maxX||80, ticks:{ font:{size:10}, callback:v=>v+'%' }, grid:{ color:'rgba(0,0,0,0.05)', display: opts.horizontal } },
+        y:{ ticks:{ font:{size:10} }, grid:{ display: !opts.horizontal } }
+      }
+    }
+  });
+}
+
+function updateDashboard() {
+  const state = document.getElementById('stateSelect').value;
+  const indicator = document.getElementById('indicatorSelect').value;
+  const year = document.getElementById('yearSelect').value;
+  const d = DATA[state];
+  const yearLabel = year==='nfhs5'?'NFHS-5 (2019–21)':year==='nfhs4'?'NFHS-4 (2015–16)':'NFHS-3 (2005–06)';
+
+  document.getElementById('metrics-label').textContent = d.label+' · '+yearLabel;
+
+  // Metrics
+  const allMetrics = [
+    {key:'stunting',label:'Stunted',alertThresh:40},
+    {key:'wasting',label:'Wasted',alertThresh:20},
+    {key:'underweight',label:'Underweight',alertThresh:35},
+    {key:'anemia',label:'Anemic',alertThresh:65}
+  ];
+  const show = indicator==='all' ? allMetrics : allMetrics.filter(m=>m.key===indicator);
+  const val = d[year];
+  const prev = d.nfhs4;
+
+  document.getElementById('metricsGrid').innerHTML = show.map(m => {
+    const v = val[m.key];
+    const p = prev[m.key];
+    const diff = (v - p).toFixed(1);
+    const improved = diff < 0;
+    const isAlert = v >= m.alertThresh && !improved;
+    const cls = isAlert ? 'alert' : improved ? 'good' : '';
+    const arrow = diff < 0 ? '↓' : '↑';
+    const deltaClass = improved ? 'delta-good' : 'delta-bad';
+    return `<div class="metric-card ${cls}">
+      <div class="metric-label">${m.label}</div>
+      <div class="metric-value">${v}%</div>
+      <div class="metric-delta ${deltaClass}">${arrow} ${Math.abs(diff)}pp vs NFHS-4</div>
+      <div class="metric-survey">${yearLabel} · ${d.label}</div>
+    </div>`;
+  }).join('');
+
+  // Recommendation
+  document.getElementById('rec-dynamic').textContent = RECS[state] || RECS.national;
+
+  // Trend chart
+  const indicators = indicator==='all' ? ['stunting','wasting','underweight','anemia'] : [indicator];
+  const trendLabels = ['NFHS-3 (2005–06)','NFHS-4 (2015–16)','NFHS-5 (2019–21)'];
+  const trendDatasets = indicators.map(ind => ({
+    label: NAMES[ind],
+    data: [d.nfhs3[ind], d.nfhs4[ind], d.nfhs5[ind]],
+    borderColor: PALETTE[ind],
+    backgroundColor: PALETTE[ind]+'18',
+    tension: 0.3, pointRadius:5, pointHoverRadius:7, borderWidth:2, fill:false
+  }));
+  document.getElementById('trendTitle').textContent = d.label+' — nutrition trends across NFHS rounds';
+  document.getElementById('trendLegend').innerHTML = indicators.map(ind =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${PALETTE[ind]}"></div>${NAMES[ind]}</div>`
+  ).join('');
+  drawLineChart('trendChart', trendLabels, trendDatasets);
+}
+
+function buildStateChart() {
+  const sorted = [...STATE_STUNTING].sort((a,b)=>a.val-b.val);
+  const colors = sorted.map(d =>
+    d.state==='National avg' ? '#c8860a' : d.val<=25 ? '#1d9e75' : d.val>=40 ? '#c0392b' : '#2d6fa5'
+  );
+  drawBarChart('stateChart', sorted.map(d=>d.state), [{
+    data: sorted.map(d=>d.val),
+    backgroundColor: colors,
+    borderRadius: 3
+  }], { horizontal:true, maxX:55 });
+}
+
+function buildUrbanChart() {
+  drawBarChart('urbanChart',
+    ['Stunting','Wasting','Underweight','Anemia'],
+    [
+      { label:'Urban', data:[30.1,18.5,27.3,62.5], backgroundColor:'#1a4b7a', borderRadius:3 },
+      { label:'Rural', data:[37.3,19.7,33.8,68.6], backgroundColor:'#5b9fd4', borderRadius:3 }
+    ],
+    { maxX:80 }
+  );
+}
+
+// Load Chart.js then init
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+script.onload = function() {
+  updateDashboard();
+  buildStateChart();
+  buildUrbanChart();
+};
+script.onerror = function() {
+  document.querySelectorAll('canvas').forEach(c => {
+    const msg = document.createElement('p');
+    msg.style.cssText = 'text-align:center;color:#5a7a9a;font-size:13px;padding:40px 20px;';
+    msg.textContent = 'Charts require an internet connection to load.';
+    c.parentNode.replaceChild(msg, c);
+  });
+  updateDashboard();
+  buildStateChart();
+  buildUrbanChart();
+};
+document.head.appendChild(script);
+</script>
+</body>
+</html>
